@@ -829,3 +829,20 @@ try {
 } catch (e) {
   console.log("❌ Failed to call startBot():", e.message);
 }
+
+
+// ====== SAFE EXPRESS KEEP-ALIVE PATCH ======
+if (!global.expressPatched) {
+  global.expressPatched = true;
+  try {
+    if (typeof app === "undefined") {
+      console.warn("⚠️ 'app' is not defined. Express server not started.");
+    } else if (typeof app.get === "function" && typeof app.listen === "function") {
+      app.get("/", (_, res) => res.send("✅ Bot is alive!"));
+      const PORT = process.env.PORT || 3000;
+      app.listen(PORT, () => console.log("✅ Web server running on port " + PORT));
+    }
+  } catch (e) {
+    console.error("❌ Express patch failed:", e.message);
+  }
+}
