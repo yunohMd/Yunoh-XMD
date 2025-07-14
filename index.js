@@ -789,12 +789,3 @@ if (isBanned) return; // Ignore banned users completely
   setTimeout(() => {
   connectToWA()
   }, 4000);
-
-
-// Minimal keep-alive HTTP server (useful for Railway/Render)
-const express = require("express");
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.get("/", (req, res) => res.send("Bot is running."));
-app.listen(PORT, () => console.log(`✅ Express server live on port ${PORT}`));
