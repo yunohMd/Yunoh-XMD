@@ -5,8 +5,8 @@ const config = require('../config');
 const { cmd } = require('../command');
 
 cmd({
-    pattern: "repo1",
-    alias: ["sc1", "script1", "info1"],
+    pattern: "repo",
+    alias: ["sc", "script", "info"],
     desc: "Fetch GitHub repository information",
     react: "📂",
     category: "info",
