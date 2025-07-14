@@ -804,3 +804,28 @@ if (typeof startBot === 'function') {
 } else {
   console.error("❌ startBot function is not defined.");
 }
+
+
+try {
+  if (typeof app === "undefined") {
+    
+    const app = express();
+    app.get("/", (_, res) => res.send("✅ Bot is running!"));
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+  } else {
+    app.get("/", (_, res) => res.send("✅ Bot is running!"));
+  }
+} catch (e) {
+  console.log("❗ Express setup skipped:", e.message);
+}
+
+try {
+  if (typeof startBot === "function") {
+    startBot();
+  } else {
+    console.log("❌ startBot() is not defined.");
+  }
+} catch (e) {
+  console.log("❌ Failed to call startBot():", e.message);
+}
