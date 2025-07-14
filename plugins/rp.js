@@ -20,8 +20,8 @@ async (conn, mek, m, { from, reply }) => {
         if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
         const repoData = await response.json();
 
-        // Format 4: Code Style
-        const style4 = `┌──────────────────────┐
+        // Format 1: Code Style
+        const style1 = `┌──────────────────────┐
 │  ⚡ ${config.BOT_NAME} REPO  ⚡  │
 ├──────────────────────┤
 │ • Name: ${repoData.name}
@@ -33,8 +33,8 @@ async (conn, mek, m, { from, reply }) => {
 └──────────────────────┘
 > ${config.DESCRIPTION}`;
 
-        // Format 6: Retro Terminal
-        const style6 = `╔══════════════════════╗
+        // Format 2: Retro Terminal
+        const style2 = `╔══════════════════════╗
 ║   ${config.BOT_NAME} REPO    ║
 ╠══════════════════════╣
 ║ > NAME: ${repoData.name}
@@ -46,7 +46,7 @@ async (conn, mek, m, { from, reply }) => {
 ╚══════════════════════╝
 > ${config.DESCRIPTION}`;
 
-        const styles = [style1, style2, style3, style4, style5, style6, style7, style8, style9, style10];
+        const styles = [style1, style2];
         const selectedStyle = styles[Math.floor(Math.random() * styles.length)];
 
         // Send image with repo info
@@ -70,4 +70,4 @@ async (conn, mek, m, { from, reply }) => {
         reply(`❌ Error: ${error.message}`);
     }
 });
-      
+            
