@@ -789,3 +789,18 @@ if (isBanned) return; // Ignore banned users completely
   setTimeout(() => {
   connectToWA()
   }, 4000);
+
+
+// ======== KEEP ALIVE & RECONNECT FIX ========
+const express = require("express");
+const app = express();
+app.get("/", (_, res) => res.send("✅ Bot is running!"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Web server running on port ${PORT}`));
+
+// Ensure startBot function exists and is called
+if (typeof startBot === 'function') {
+  startBot();
+} else {
+  console.error("❌ startBot function is not defined.");
+}
