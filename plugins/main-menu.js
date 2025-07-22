@@ -1,37 +1,60 @@
 const config = require('../config')
 const { cmd, commands } = require('../command');
 const os = require("os")
-const fs = require("fs")
-const path = require("path")
 const { runtime } = require('../lib/functions')
-const axios = require('axios')
+const fs = require("fs");
+const path = require("path");
 
 cmd({
-    pattern: "menu",
-    alias: "command",
-    desc: "menu the bot",
-    category: "menu",
-    react: "🚀",
-    filename: __filename
+  pattern: "menu",
+  alias: ["allmenu", "bmb"],
+  use: '.menu',
+  desc: "menu the bot",
+  category: "menu",
+  react: "🔰",
+  filename: __filename
 },
-async (conn, mek, m, {
-    from, quoted, body, isCmd, command, args, q, isGroup,
-    sender, senderNumber, botNumber2, botNumber, pushname,
-    isMe, isOwner, groupMetadata, groupName, participants,
-    groupAdmins, isBotAdmins, isAdmins, reply, prefix, mode
-}) => {
+  async (conn, mek, m, {
+    from,
+    quoted,
+    body,
+    isCmd,
+    command,
+    args,
+    q,
+    isGroup,
+    sender,
+    senderNumber,
+    botNumber2,
+    botNumber,
+    pushname,
+    isMe,
+    isOwner,
+    groupMetadata,
+    groupName,
+    participants,
+    groupAdmins,
+    isBotAdmins,
+    isAdmins,
+    reply
+  }) => {
     try {
-        let info = `
-╭━━〔 *${config.BOT_NAME}* 〕━━╮
-┃ 👑 Owner     : *${config.OWNER_NAME}*
-┃ 🙋‍♂️ User      : *${m.pushName}*
-┃ ⚙️ Mode      : *${mode}*
-┃ 💻 Platform  : *${os.platform()}*
-┃ 🔤 Prefix    : [${prefix}]
-┃ 🧩 Version   : *1.0*
-╰━━━━━━━━━━━━━━━━━━━━═══╣
 
-> ${pushwish} *${m.pushName}*!
+      const randomIndex = Math.floor(Math.random() * 10) + 1;
+      const imagePath = path.join(__dirname, '..', 'scs', `menu${randomIndex}.jpg`);
+      const imageBuffer = fs.readFileSync(imagePath);
+
+      let dec = `
+╭━〔*🔰 𝗡𝗢𝗩𝗔-𝗫𝗠𝗗 🔰*〕━━┈⊷
+┃❒╭────────────
+┃❒│ 👑 *ʀᴜɴᴛɪᴍᴇ:* ${runtime(process.uptime())}
+┃❒│ 🕹️ *ᴍᴏᴅᴇ:* *${config.MODE}*
+┃❒│ 🎯 *ᴘʀᴇғɪx:* *${config.PREFIX}*
+┃❒│ 💡 *ʀᴀᴍ ᴜsᴇ:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} GB / ${Math.round(require('os').totalmem / 1024 / 1024)} GB
+┃❒│ 👑 *ᴅᴇᴠ:* *𝙱.𝙼.𝙱-𝚃𝙴𝙲𝙷*
+┃❒│ 🚀 *ᴠᴇʀsɪᴏɴ:* *1.0.0*
+┃❒╰────────────────
+╰━━━━━━━━━━━━━━━━━━┈⊷
 
 ╔══════════════════╣
 ║ *ᴄᴏɴᴠᴇʀᴛᴇʀ ᴍᴇɴᴜ* 
@@ -201,41 +224,30 @@ async (conn, mek, m, {
 ║ •✨ ɢᴇᴛᴘʀɪᴠᴀᴄʏ 
 ║ •✨ ɢʀᴏᴜᴘ𝘀ᴘʀɪᴠᴀᴄʏ 
 ╚════════════════════╣
+> ᴘᴏᴡᴇʀᴇᴅ ʙʏ 𝙽𝙾𝚅𝙰-𝚇𝙼𝙳🚘`;
 
-*${config.DESCRIPTION}*`;
-
-        // Random image from /scs folder
-        const scsFolder = path.join(__dirname, "../scs");
-        const images = fs.readdirSync(scsFolder).filter(f => /^menu\d+\.jpg$/i.test(f));
-        let selectedImagePath;
-        if (images.length > 0) {
-            const randomImage = images[Math.floor(Math.random() * images.length)];
-            selectedImagePath = path.join(scsFolder, randomImage);
-        } else {
-            selectedImagePath = null;
-        }
-
-        await conn.sendMessage(
-            from,
-            {
-                image: selectedImagePath ? fs.readFileSync(selectedImagePath) : Buffer.alloc(0),
-                caption: info,
-                contextInfo: {
-                    mentionedJid: [m.sender],
-                    forwardingScore: 999,
-                    isForwarded: true,
-                    forwardedNewsletterMessageInfo: {
-                        newsletterJid: '120363382023564830@newsletter',
-                        newsletterName: '𝗡𝗢𝗩𝗔-𝗫𝗠𝗗 🚘',
-                        serverMessageId: 143
-                    }
-                }
-            },
-            { quoted: mek }
-        );
+      await conn.sendMessage(
+        from,
+        {
+          image: imageBuffer,
+          caption: dec,
+          contextInfo: {
+            mentionedJid: [m.sender],
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterJid: '120363382023564830@newsletter',
+              newsletterName: '𝙱.𝙼.𝙱-𝚃𝙴𝙲𝙷',
+              serverMessageId: 143
+            }
+          }
+        },
+        { quoted: mek }
+      );
 
     } catch (e) {
-        console.log(e);
-        reply(`${e}`);
+      console.log(e);
+      reply(`${e}`);
     }
-});
+  });
+  
