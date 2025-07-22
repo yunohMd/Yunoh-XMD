@@ -18,7 +18,7 @@ async (conn, mek, m, {
     from, quoted, body, isCmd, command, args, q, isGroup,
     sender, senderNumber, botNumber2, botNumber, pushname,
     isMe, isOwner, groupMetadata, groupName, participants,
-    groupAdmins, isBotAdmins, isAdmins, reply
+    groupAdmins, isBotAdmins, isAdmins, reply, prefix, mode
 }) => {
     try {
         let info = `
@@ -200,8 +200,9 @@ async (conn, mek, m, {
 ║ •✨ 𝘀ᴇᴛᴘᴘᴀʟʟ
 ║ •✨ ɢᴇᴛᴘʀɪᴠᴀᴄʏ 
 ║ •✨ ɢʀᴏᴜᴘ𝘀ᴘʀɪᴠᴀᴄʏ 
-╚══════════════════
- *${config.DESCRIPTION}*`;
+╚════════════════════╣
+
+*${config.DESCRIPTION}*`;
 
         // Random image from /scs folder
         const scsFolder = path.join(__dirname, "../scs");
@@ -218,7 +219,7 @@ async (conn, mek, m, {
             from,
             {
                 image: selectedImagePath ? fs.readFileSync(selectedImagePath) : Buffer.alloc(0),
-                caption: dec,
+                caption: info,
                 contextInfo: {
                     mentionedJid: [m.sender],
                     forwardingScore: 999,
