@@ -1,24 +1,29 @@
-const config = require('../config')
+const config = require('../config');
 const { cmd, commands } = require('../command');
-const os = require("os")
-const { runtime } = require('../lib/functions')
+const os = require("os");
+const { runtime } = require('../lib/functions');
 const fs = require("fs");
 const path = require("path");
 
 // Friend's Blue Tick vCard
-  const quotedContact = {
-    key: {
-      fromMe: false,
-      participant: `0@s.whatsapp.net`,
-      remoteJid: "status@broadcast"
-    },
-    message: {
-      contactMessage: {
-        displayName: "B.M.B VERIFIED ✅",
-        vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=254700000001:+254 700 000001\nEND:VCARD"
-      }
-    }
-  };
+const quotedContact = {
+  key: {
+    fromMe: false,
+    participant: `0@s.whatsapp.net`,
+    remoteJid: "status@broadcast"
+  },
+  message: {
+    contactMessage: {
+      displayName: "B.M.B VERIFIED ✅",
+      vcard: `BEGIN:VCARD
+VERSION:3.0
+FN:B.M.B VERIFIED ✅
+ORG:BMB-TECH BOT;
+TEL;type=CELL;type=VOICE;waid=255716945971:+255 716 945 971
+END:VCARD`
+    }
+  }
+};
 
 cmd({
   pattern: "menu",
@@ -28,39 +33,16 @@ cmd({
   category: "menu",
   react: "🔰",
   filename: __filename
-},
-  async (conn, mek, m, {
-    from,
-    quoted,
-    body,
-    isCmd,
-    command,
-    args,
-    q,
-    isGroup,
-    sender,
-    senderNumber,
-    botNumber2,
-    botNumber,
-    pushname,
-    isMe,
-    isOwner,
-    groupMetadata,
-    groupName,
-    participants,
-    groupAdmins,
-    isBotAdmins,
-    isAdmins,
-    reply
-  }) => {
-    try {
+}, async (conn, mek, m, {
+  from,
+  reply
+}) => {
+  try {
+    const randomIndex = Math.floor(Math.random() * 10) + 1;
+    const imagePath = path.join(__dirname, '..', 'scs', `menu${randomIndex}.jpg`);
+    const imageBuffer = fs.readFileSync(imagePath);
 
-      const randomIndex = Math.floor(Math.random() * 10) + 1;
-      const imagePath = path.join(__dirname, '..', 'scs', `menu${randomIndex}.jpg`);
-      const imageBuffer = fs.readFileSync(imagePath);
-
-      let dec = `
-╭━〔*🚀 𝗡𝗢𝗩𝗔-𝗫𝗠𝗗 🚀*〕━━┈⊷
+    let dec = `╭━〔*🚀 𝗡𝗢𝗩𝗔-𝗫𝗠𝗗 🚀*〕━━┈⊷
 ┃❒╭────────────
 ┃❒│ 👑 *ʀᴜɴᴛɪᴍᴇ:* ${runtime(process.uptime())}
 ┃❒│ 🕹️ *ᴍᴏᴅᴇ:* *${config.MODE}*
@@ -202,31 +184,30 @@ cmd({
 ║ •✨ ʙʟᴏᴄᴋʟɪ𝘀ᴛ 
 ║ •✨ ɢᴇᴛʙɪᴏ 
 ╚════════════════════╣
+
 > ᴘᴏᴡᴇʀᴇᴅ ʙʏ 𝙽𝙾𝚅𝙰-𝚇𝙼𝙳🚘`;
 
-      await conn.sendMessage(
-        from,
-        {
-          image: imageBuffer,
-          caption: dec,
-          contextInfo: {
-            mentionedJid: [m.sender],
-            forwardingScore: 999,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: '120363382023564830@newsletter',
-              newsletterName: '𝙱.𝙼.𝙱-𝚃𝙴𝙲𝙷',
-              serverMessageId: 143
-            }
+    await conn.sendMessage(
+      from,
+      {
+        image: imageBuffer,
+        caption: dec,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363382023564830@newsletter',
+            newsletterName: '𝙱.𝙼.𝙱-𝚃𝙴𝙲𝙃',
+            serverMessageId: 143
           }
-        },
-        { quoted: mek }
-      );
+        }
+      },
+      { quoted: quotedContact }
+    );
 
-    } catch (e) {
-      console.log(e);
-      reply(`${e}`);
-    }
-  });
-
-  
+  } catch (e) {
+    console.log(e);
+    reply(`${e}`);
+  }
+});
