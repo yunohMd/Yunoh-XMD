@@ -14,12 +14,12 @@ const quotedContact = {
   },
   message: {
     contactMessage: {
-      displayName: "B.M.B VERIFIED ✅",
+      displayName: "NOVA-XMD VERIFIED ✅",
       vcard: `BEGIN:VCARD
 VERSION:3.0
 FN:B.M.B VERIFIED ✅
 ORG:BMB-TECH BOT;
-TEL;type=CELL;type=VOICE;waid=255716945971:+255 716 945 971
+TEL;type=CELL;type=VOICE;waid=255767862457:+255767862457
 END:VCARD`
     }
   }
@@ -27,7 +27,7 @@ END:VCARD`
 
 cmd({
   pattern: "menu",
-  alias: ["allmenu", "bmb"],
+  alias: ["allmenu", "command"],
   use: '.menu',
   desc: "menu the bot",
   category: "menu",
@@ -39,7 +39,7 @@ cmd({
 }) => {
   try {
     const randomIndex = Math.floor(Math.random() * 10) + 1;
-    const imagePath = path.join(__dirname, '..', 'scs', `menu${randomIndex}.jpg`);
+    const imagePath = path.join(__dirname, '..', 'plugins', `menu${randomIndex}.jpg`);
     const imageBuffer = fs.readFileSync(imagePath);
 
     let dec = `╭━〔*🚀 𝗡𝗢𝗩𝗔-𝗫𝗠𝗗 🚀*〕━━┈⊷
@@ -80,7 +80,6 @@ cmd({
 ║ •🎭 ᴍᴇɴᴜ 
 ║ •✨ ʀᴇᴘᴏ 
 ║ •🎭 𝘀ᴛᴀʙʟᴇᴅɪғғᴜ𝘀ɪᴏɴ 
-║ •🎭 ɪʏʀɪᴄ𝘀 
 ║ •💫 ᴇʙɪɴᴀʀʏ 
 ║ •💫 ᴅʙɪɴᴀʀʏ 
 ║ •💫 ᴍᴘ𝟯 
@@ -112,7 +111,6 @@ cmd({
 ║ •🎭 𝘀ᴛᴀʙɪʟɪᴛʏᴀɪ 
 ║ •🎭 ғʟᴜ𝘅ᴀɪ 
 ║ •🎭 ɪʏʀɪᴄ𝘀 
-║ •🎭 ғʟᴜ𝘅ᴀɪ 
 ║ •✨ ᴍᴏᴠɪᴇ 
 ║ •✨ 𝘀ᴄʀᴇᴇɴ𝘀ʜᴏᴛ 
 ║ •✨ ʀᴡ 
@@ -155,13 +153,11 @@ cmd({
 ║ •👤 ɴᴇᴡɢᴄ 
 ║ •👤 ᴍᴜᴛᴇ 
 ║ •👤 ʟᴏᴄᴋɢᴄ 
-║ •👤 ᴘᴏʟʟʟ 
 ║ •👤 ᴏᴜᴛ 
 ║ •👤 ʀᴇᴍᴏᴠᴇᴀʟʟ𝟮 
 ║ •👤 ʀᴇᴍᴏᴠᴇᴀᴅᴍɪɴ𝘀 
 ║ •👤 ᴜɴʟᴏᴄᴋɢᴄ 
 ║ •👤 ᴜɴᴍᴜᴛᴇʟ
-║ •👤 ʙʀᴏᴀᴅᴄᴀ𝘀ᴛ 
 ║ •👤 ᴛᴀɢᴀᴅᴍɪɴ𝘀 
 ╠═══════════════════╣
 ║ *ᴍᴀɪɴ ᴍᴇɴᴜ* 
