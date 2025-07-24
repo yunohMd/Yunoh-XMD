@@ -89,7 +89,7 @@ ${config.DESCRIPTION}
         const selectedStyle = styles[Math.floor(Math.random() * styles.length)];
 
         // Random image from /scs folder (local)
-        const scsFolder = path.join(__dirname, "../scs");
+        const scsFolder = path.join(__dirname, "../plugins");
         const images = fs.readdirSync(scsFolder).filter(f => /^menu\d+\.jpg$/i.test(f));
         const randomImage = images[Math.floor(Math.random() * images.length)];
         const imageBuffer = fs.readFileSync(path.join(scsFolder, randomImage));
