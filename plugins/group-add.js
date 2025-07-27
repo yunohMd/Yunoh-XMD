@@ -1,5 +1,20 @@
 const { cmd } = require('../command');
 
+// Contact message for verified context
+const quotedContact = {
+  key: {
+    fromMe: false,
+    participant: `0@s.whatsapp.net`,
+    remoteJid: "status@broadcast"
+  },
+  message: {
+    contactMessage: {
+      displayName: "B.M.B VERIFIED ✅",
+      vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=254769529791:254769529791\nEND:VCARD"
+    }
+  }
+};
+
 cmd({
     pattern: "add",
     alias: ["a", "invite"],
@@ -11,36 +26,78 @@ cmd({
 async (conn, mek, m, {
     from, q, isGroup, isBotAdmins, reply, quoted, senderNumber
 }) => {
-    // Check if the command is used in a group
-    if (!isGroup) return reply("❌ This command can only be used in groups.");
+    const contextInfo = {
+        mentionedJid: [m.sender],
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 1
+        }
+    };
 
-    // Get the bot owner's number dynamically from conn.user.id
+    if (!isGroup) return reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ This command can only be used in groups.
+╰──────────────────╯
+    `.trim(), { quoted: quotedContact, contextInfo });
+
     const botOwner = conn.user.id.split(":")[0];
     if (senderNumber !== botOwner) {
-        return reply("❌ Only the bot owner can use this command.");
+        return reply(`
+╭───「 *ACCESS DENIED* 」───╮
+│ 🚫 Only the bot owner can use this command.
+╰──────────────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
     }
 
-    // Check if the bot is an admin
-    if (!isBotAdmins) return reply("❌ I need to be an admin to use this command.");
+    if (!isBotAdmins) return reply(`
+╭───「 *BOT ERROR* 」───╮
+│ ⚠️ I need to be an admin to add members.
+╰──────────────────────╯
+    `.trim(), { quoted: quotedContact, contextInfo });
 
     let number;
     if (m.quoted) {
-        number = m.quoted.sender.split("@")[0]; // If replying to a message, get the sender's number
+        number = m.quoted.sender.split("@")[0];
     } else if (q && q.includes("@")) {
-        number = q.replace(/[@\s]/g, ''); // If manually typing a number with '@'
+        number = q.replace(/[@\s]/g, '');
     } else if (q && /^\d+$/.test(q)) {
-        number = q; // If directly typing a number
+        number = q;
     } else {
-        return reply("❌ Please reply to a message, mention a user, or provide a number to add.");
+        return reply(`
+╭───「 *USAGE* 」───╮
+│ ❌ Please:
+│ - Reply to a user,
+│ - Mention them, or
+│ - Provide a number.
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
     }
 
     const jid = number + "@s.whatsapp.net";
 
     try {
         await conn.groupParticipantsUpdate(from, [jid], "add");
-        reply(`✅ Successfully added @${number}`, { mentions: [jid] });
+        reply(`
+╭───「 *SUCCESS* 」───╮
+│ ✅ Successfully added @${number}
+╰──────────────────────╯
+        `.trim(), {
+            quoted: quotedContact,
+            contextInfo: {
+                ...contextInfo,
+                mentionedJid: [jid]
+            }
+        });
     } catch (error) {
         console.error("Add command error:", error);
-        reply("❌ Failed to add the member.");
+        reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ Failed to add the member.
+│ ${error?.message || "An unknown error occurred."}
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
     }
 });
