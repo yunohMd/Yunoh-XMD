@@ -1,5 +1,19 @@
 const { cmd } = require('../command');
 
+const quotedContact = {
+    key: {
+        fromMe: false,
+        participant: `0@s.whatsapp.net`,
+        remoteJid: "status@broadcast"
+    },
+    message: {
+        contactMessage: {
+            displayName: "B.M.B VERIFIED ✅",
+            vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=254769529791:254769529791\nEND:VCARD"
+        }
+    }
+};
+
 cmd({
     pattern: "demote",
     alias: ["d", "dismiss", "removeadmin"],
@@ -8,37 +22,131 @@ cmd({
     react: "⬇️",
     filename: __filename
 },
-async(conn, mek, m, {
-    from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isCreator, isDev, isAdmins, reply
-}) => {
-    // Check if the command is used in a group
-    if (!isGroup) return reply("❌ This command can only be used in groups.");
+async (conn, mek, m, { from, q, isGroup, isAdmins, isBotAdmins, reply, botNumber, quoted, sender }) => {
+    if (!isGroup) return reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ This command can only be used in groups.
+╰──────────────────╯
+    `.trim(), { quoted: quotedContact, contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 1
+        }
+    } });
 
-    // Check if the user is an admin
-    if (!isAdmins) return reply("❌ Only group admins can use this command.");
+    if (!isAdmins) return reply(`
+╭───「 *ACCESS DENIED* 」───╮
+│ 🚫 Only group admins can use this command.
+╰──────────────────────────╯
+    `.trim(), { quoted: quotedContact, contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 1
+        }
+    } });
 
-    // Check if the bot is an admin
-    if (!isBotAdmins) return reply("❌ I need to be an admin to use this command.");
+    if (!isBotAdmins) return reply(`
+╭───「 *BOT ERROR* 」───╮
+│ ⚠️ I need to be an admin to perform this action.
+╰──────────────────────╯
+    `.trim(), { quoted: quotedContact, contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 1
+        }
+    } });
+
+    const normalizeJid = (input) => {
+        if (!input) return null;
+        if (input.includes("@")) return input.split("@")[0] + "@s.whatsapp.net";
+        return input + "@s.whatsapp.net";
+    };
 
     let number;
-    if (m.quoted) {
-        number = m.quoted.sender.split("@")[0]; // If replying to a message, get the sender's number
+    if (quoted) {
+        number = quoted.sender || quoted.key?.participant;
+        number = number.split("@")[0];
     } else if (q && q.includes("@")) {
-        number = q.replace(/[@\s]/g, ''); // If manually typing a number
+        number = q.replace(/[@\s]/g, '');
+    } else if (q && /^\d+$/.test(q)) {
+        number = q;
     } else {
-        return reply("❌ Please reply to a message or provide a number to demote.");
+        return reply(`
+╭───「 *USAGE* 」───╮
+│ ❌ Please reply to a user message or provide a number.
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: "120363382023564830@newsletter",
+                newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+                serverMessageId: 1
+            }
+        } });
     }
 
-    // Prevent demoting the bot itself
-    if (number === botNumber) return reply("❌ The bot cannot demote itself.");
+    if (number === botNumber.split("@")[0]) {
+        return reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ The bot cannot demote itself.
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: "120363382023564830@newsletter",
+                newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+                serverMessageId: 1
+            }
+        } });
+    }
 
-    const jid = number + "@s.whatsapp.net";
+    const jid = normalizeJid(number);
 
     try {
         await conn.groupParticipantsUpdate(from, [jid], "demote");
-        reply(`✅ Successfully demoted @${number} to a normal member.`, { mentions: [jid] });
+        return reply(`
+╭───「 *SUCCESS* 」───╮
+│ ✅ Successfully demoted @${number} to a normal member.
+╰────────────────────╯
+        `.trim(), { 
+            mentions: [jid],
+            quoted: quotedContact,
+            contextInfo: {
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: "120363382023564830@newsletter",
+                    newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+                    serverMessageId: 1
+                }
+            }
+        });
     } catch (error) {
         console.error("Demote command error:", error);
-        reply("❌ Failed to demote the member.");
+        return reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ Failed to demote the member.
+│ ${error?.message || "Unknown error."}
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: "120363382023564830@newsletter",
+                newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+                serverMessageId: 1
+            }
+        } });
     }
 });
