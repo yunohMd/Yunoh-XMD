@@ -6,7 +6,7 @@ cmd({
   on: 'body'
 }, async (conn, mek, m, { from, body }) => {
   try {
-    const jsonUrl = 'https://raw.githubusercontent.com/Pkdriller/BENA-DATA/main/autosticker.json';
+    const jsonUrl = 'https://github.com/novaxmd/BMB-XMD-DATA/raw/refs/heads/main/autosticker.json';
     const res = await axios.get(jsonUrl);
     const data = res.data;
 
