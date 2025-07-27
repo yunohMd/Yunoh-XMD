@@ -1,9 +1,23 @@
 const { cmd } = require('../command');
 
-// Fixed & Created By JawadTechX
+// Contact for verified appearance
+const quotedContact = {
+  key: {
+    fromMe: false,
+    participant: `0@s.whatsapp.net`,
+    remoteJid: "status@broadcast"
+  },
+  message: {
+    contactMessage: {
+      displayName: "B.M.B VERIFIED ✅",
+      vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=255767862457:+255 767 862457\nEND:VCARD"
+    }
+  }
+};
+
 cmd({
   pattern: "hidetag",
-  alias: ["tag", "h"],  
+  alias: ["tag", "h"],
   react: "🔊",
   desc: "To Tag all Members for Any Message/Media",
   category: "group",
@@ -22,101 +36,82 @@ async (conn, mek, m, {
     if (!isGroup) return reply("❌ This command can only be used in groups.");
     if (!isAdmins && !isCreator) return reply("❌ Only group admins can use this command.");
 
-    const mentionAll = { mentions: participants.map(u => u.id) };
-
-    // If no message or reply is provided
-    if (!q && !m.quoted) {
-      return reply("❌ Please provide a message or reply to a message to tag all members.");
-    }
-
-    // If a reply to a message
-    if (m.quoted) {
-      const type = m.quoted.mtype || '';
-      
-      // If it's a text message (extendedTextMessage)
-      if (type === 'extendedTextMessage') {
-        return await conn.sendMessage(from, {
-          text: m.quoted.text || 'No message content found.',
-          ...mentionAll
-        }, { quoted: mek });
-      }
-
-      // Handle media messages
-      if (['imageMessage', 'videoMessage', 'audioMessage', 'stickerMessage', 'documentMessage'].includes(type)) {
-        try {
-          const buffer = await m.quoted.download?.();
-          if (!buffer) return reply("❌ Failed to download the quoted media.");
-
-          let content;
-          switch (type) {
-            case "imageMessage":
-              content = { image: buffer, caption: m.quoted.text || "📷 Image", ...mentionAll };
-              break;
-            case "videoMessage":
-              content = { 
-                video: buffer, 
-                caption: m.quoted.text || "🎥 Video", 
-                gifPlayback: m.quoted.message?.videoMessage?.gifPlayback || false, 
-                ...mentionAll 
-              };
-              break;
-            case "audioMessage":
-              content = { 
-                audio: buffer, 
-                mimetype: "audio/mp4", 
-                ptt: m.quoted.message?.audioMessage?.ptt || false, 
-                ...mentionAll 
-              };
-              break;
-            case "stickerMessage":
-              content = { sticker: buffer, ...mentionAll };
-              break;
-            case "documentMessage":
-              content = {
-                document: buffer,
-                mimetype: m.quoted.message?.documentMessage?.mimetype || "application/octet-stream",
-                fileName: m.quoted.message?.documentMessage?.fileName || "file",
-                caption: m.quoted.text || "",
-                ...mentionAll
-              };
-              break;
-          }
-
-          if (content) {
-            return await conn.sendMessage(from, content, { quoted: mek });
-          }
-        } catch (e) {
-          console.error("Media download/send error:", e);
-          return reply("❌ Failed to process the media. Sending as text instead.");
+    const mentionAll = {
+      mentions: participants.map(u => u.id),
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363382023564830@newsletter",
+          newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+          serverMessageId: 13
         }
       }
+    };
 
-      // Fallback for any other message type
-      return await conn.sendMessage(from, {
-        text: m.quoted.text || "📨 Message",
-        ...mentionAll
-      }, { quoted: mek });
+    if (!q && !m.quoted) return reply("❌ Reply or write a message to tag all members.");
+
+    if (m.quoted) {
+      const type = m.quoted.mtype || '';
+      const buffer = await m.quoted.download?.();
+
+      switch (type) {
+        case 'imageMessage':
+          return await conn.sendMessage(from, {
+            image: buffer,
+            caption: m.quoted.text || "📷 Image",
+            ...mentionAll
+          }, { quoted: quotedContact });
+
+        case 'videoMessage':
+          return await conn.sendMessage(from, {
+            video: buffer,
+            caption: m.quoted.text || "🎥 Video",
+            gifPlayback: m.quoted.message?.videoMessage?.gifPlayback || false,
+            ...mentionAll
+          }, { quoted: quotedContact });
+
+        case 'audioMessage':
+          return await conn.sendMessage(from, {
+            audio: buffer,
+            mimetype: "audio/mp4",
+            ptt: m.quoted.message?.audioMessage?.ptt || false,
+            ...mentionAll
+          }, { quoted: quotedContact });
+
+        case 'stickerMessage':
+          return await conn.sendMessage(from, {
+            sticker: buffer,
+            ...mentionAll
+          }, { quoted: quotedContact });
+
+        case 'documentMessage':
+          return await conn.sendMessage(from, {
+            document: buffer,
+            mimetype: m.quoted.message?.documentMessage?.mimetype || "application/octet-stream",
+            fileName: m.quoted.message?.documentMessage?.fileName || "file",
+            caption: m.quoted.text || "",
+            ...mentionAll
+          }, { quoted: quotedContact });
+
+        case 'extendedTextMessage':
+        default:
+          return await conn.sendMessage(from, {
+            text: `╭───⧈ *HIDETAG MESSAGE* ⧈\n│\n│ ${m.quoted.text || '📨 Message'}\n│\n╰──⧈ 𝗡𝗢𝗩𝗔 𝗫𝗠𝗗`,
+            ...mentionAll
+          }, { quoted: quotedContact });
+      }
     }
 
-    // If no quoted message, but a direct message is sent
     if (q) {
-      // If the direct message is a URL, send it as a message
-      if (isUrl(q)) {
-        return await conn.sendMessage(from, {
-          text: q,
-          ...mentionAll
-        }, { quoted: mek });
-      }
-
-      // Otherwise, just send the text without the command name
-      await conn.sendMessage(from, {
-        text: q, // Sends the message without the command name
+      return await conn.sendMessage(from, {
+        text: `╭───⧈ *HIDETAG MESSAGE* ⧈\n│\n│ ${q}\n│\n╰──⧈ 𝗡𝗢𝗩𝗔 𝗫𝗠𝗗`,
         ...mentionAll
-      }, { quoted: mek });
+      }, { quoted: quotedContact });
     }
 
   } catch (e) {
-    console.error(e);
-    reply(`❌ *Error Occurred !!*\n\n${e.message}`);
+    console.error("❌ Hidetag Error:", e);
+    reply(`❌ *An error occurred:*\n${e.message}`);
   }
 });
