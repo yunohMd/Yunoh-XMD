@@ -1,46 +1,64 @@
-const {
-  cmd
-} = require('../command');
+const { cmd } = require('../command');
 const axios = require('axios');
+
+// Contact verified
+const quotedContact = {
+  key: {
+    fromMe: false,
+    participant: `0@s.whatsapp.net`,
+    remoteJid: "status@broadcast"
+  },
+  message: {
+    contactMessage: {
+      displayName: "B.M.B VERIFIED ✅",
+      vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=255767862457:+255 767 862457\nEND:VCARD"
+    }
+  }
+};
+
 cmd({
-  'pattern': "img",
-  'alias': ['image', 'googleimage', "searchimg"],
-  'react': '🦋',
-  'desc': "Search and download Google images",
-  'category': "fun",
-  'use': ".img <keywords>",
-  'filename': __filename
-}, async (_0xe2183a, _0x11a861, _0x96d883, {
-  reply: _0x399465,
-  args: _0x2d31ef,
-  from: _0x47c06a
-}) => {
+  pattern: "img",
+  alias: ['image', 'googleimage', "searchimg"],
+  react: '🦋',
+  desc: "Search and download Google images",
+  category: "fun",
+  use: ".img <keywords>",
+  filename: __filename
+}, async (conn, mek, m, { reply, args, from }) => {
   try {
-    const _0x1b6e3c = _0x2d31ef.join(" ");
-    if (!_0x1b6e3c) {
-      return _0x399465("🖼️ Please provide a search query\nExample: .img cute cats");
+    const query = args.join(" ");
+    if (!query) return reply("🖼️ *Please provide search keywords!*\n_Example: .img cute cats_");
+
+    await reply(`🔍 *Searching images for:* "${query}" ...`);
+
+    const res = await axios.get(`https://apis.davidcyriltech.my.id/googleimage?query=${encodeURIComponent(query)}`);
+    if (!res.data?.success || !res.data.results?.length) {
+      return reply("❌ *No images found. Try different keywords.*");
     }
-    await _0x399465("🔍 Searching images for \"" + _0x1b6e3c + "\"...");
-    const _0x2b5938 = "https://apis.davidcyriltech.my.id/googleimage?query=" + encodeURIComponent(_0x1b6e3c);
-    const _0x3bc4fd = await axios.get(_0x2b5938);
-    if (!_0x3bc4fd.data?.["success"] || !_0x3bc4fd.data.results?.['length']) {
-      return _0x399465("❌ No images found. Try different keywords");
+
+    const results = res.data.results;
+    const randomResults = results.sort(() => 0.5 - Math.random()).slice(0, 5);
+
+    for (const imgUrl of randomResults) {
+      await conn.sendMessage(from, {
+        image: { url: imgUrl },
+        caption: `╭───〔 *Image Result* 〕───⬣\n📷 Query: *${query}*\n🔗 Source: Google\n╰──✪ 𝙽𝙾𝚅𝙰 ┃ 𝚇𝙼𝙳 ✪──`,
+        contextInfo: {
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 10
+          }
+        }
+      }, { quoted: quotedContact });
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    const _0x16b53a = _0x3bc4fd.data.results;
-    const _0x2885d9 = _0x16b53a.sort(() => 0.5 - Math.random()).slice(0x0, 0x5);
-    for (const _0xf94639 of _0x2885d9) {
-      await _0xe2183a.sendMessage(_0x47c06a, {
-        'image': {
-          'url': _0xf94639
-        },
-        'caption': "📷 Result for: " + _0x1b6e3c + "\n> © Powered by 𝙽𝙾𝚅𝙰-𝚇𝙼𝙳"
-      }, {
-        'quoted': _0x11a861
-      });
-      await new Promise(_0x5cefc7 => setTimeout(_0x5cefc7, 0x3e8));
-    }
-  } catch (_0xdd5fc6) {
-    console.error("Image Search Error:", _0xdd5fc6);
-    _0x399465("❌ Error: " + (_0xdd5fc6.message || "Failed to fetch images"));
+
+  } catch (err) {
+    console.error("Image Search Error:", err);
+    reply(`❌ *Error fetching images:*\n${err.message}`);
   }
 });
