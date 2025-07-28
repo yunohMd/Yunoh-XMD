@@ -23,7 +23,7 @@ cmd({
   pattern: "repo",
   alias: ["sc", "script", "info"],
   desc: "Fetch GitHub repository information",
-  react: "📂",
+  react: "🎗️",
   category: "info",
   filename: __filename,
 },
@@ -36,6 +36,7 @@ async (conn, mek, m, { from, reply }) => {
     if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
     const repoData = await response.json();
 
+    // 5 styles bila `description`
     const style1 = `
 ╭━━━「 ${config.BOT_NAME} REPO 」━━━➤
 │ 📦 Name: ${repoData.name}
@@ -43,7 +44,6 @@ async (conn, mek, m, { from, reply }) => {
 │ ⭐ Stars: ${repoData.stargazers_count}
 │ 🍴 Forks: ${repoData.forks_count}
 │ 🌐 URL: ${repoData.html_url}
-│ 📝 Desc: ${repoData.description || 'None'}
 ╰━━━━━━━━━━━━━━━━━━━━━━━➤
 🔗 ${config.DESCRIPTION}`;
 
@@ -54,7 +54,6 @@ async (conn, mek, m, { from, reply }) => {
 ┃ 🌟 Stars : ${repoData.stargazers_count}
 ┃ 🍽️ Forks : ${repoData.forks_count}
 ┃ 🔗 Link : ${repoData.html_url}
-┃ 📜 Desc : ${repoData.description || 'None'}
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ✨ ${config.DESCRIPTION}`;
 
@@ -67,7 +66,6 @@ async (conn, mek, m, { from, reply }) => {
 🔹 *Stars:* ${repoData.stargazers_count}
 🔹 *Forks:* ${repoData.forks_count}
 🔹 *Link:* ${repoData.html_url}
-🔹 *Desc:* ${repoData.description || 'None'}
 ━━━━━━━━━━━━━━━━━━━━
 🔸 ${config.DESCRIPTION}`;
 
@@ -79,7 +77,6 @@ async (conn, mek, m, { from, reply }) => {
 [ Stars ] => ${repoData.stargazers_count}
 [ Forks ] => ${repoData.forks_count}
 [ Link  ] => ${repoData.html_url}
-[ Desc  ] => ${repoData.description || 'None'}
 ----------------------------------------
 ${config.DESCRIPTION}`;
 
@@ -91,14 +88,12 @@ ${config.DESCRIPTION}`;
 ⭐ *STARS:* ${repoData.stargazers_count}
 🍴 *FORKS:* ${repoData.forks_count}
 🌐 *URL:* ${repoData.html_url}
-📝 *DESC:* ${repoData.description || 'None'}
 ━━━━━━━━━━━━━━━━━━━━
 📌 ${config.DESCRIPTION}`;
 
     const styles = [style1, style2, style3, style4, style5];
     const selectedStyle = styles[Math.floor(Math.random() * styles.length)];
 
-    // Get a random image from /plugins/ folder (like menu1.jpg, menu2.jpg)
     const scsFolder = path.join(__dirname, "../plugins");
     const images = fs.readdirSync(scsFolder).filter(f => /^menu\d+\.jpg$/i.test(f));
     const randomImage = images.length > 0
