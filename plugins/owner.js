@@ -41,17 +41,16 @@ async (conn, mek, m, { from }) => {
             }
         });
 
-        const caption = ` 🚀 OWNER INFO 🚀
- ━━━━━━━━━━━━━━━━━━━━━━
- 📛 Name   : ${ownerName}
- 📞 Number : ${ownerNumber}
- ⚙️ Role   : Developer & Founder
- 📦 Version: 2.0.0 Beta
- ⚡ Powered by 𝙽𝙾𝚅𝙰-𝚇𝙼𝙳⚡`;
+        const caption = `🚀 OWNER INFO 🚀
+━━━━━━━━━━━━━━━━━━━━━━
+📛 Name   : ${ownerName}
+📞 Number : ${ownerNumber}
+⚙️ Role   : Developer & Founder
+📦 Version: 2.0.0 Beta
+⚡ Powered by 𝙽𝙾𝚅𝙰-𝚇𝙼𝙳 ⚡`;
 
         await conn.sendMessage(from, {
-            image: { url: 'https://github.com/novaxmd/BMB-DATA/raw/refs/heads/main/image/allmenu.jpg' },
-            caption,
+            text: caption,
             contextInfo: {
                 mentionedJid: [`${ownerNumber.replace('+', '')}@s.whatsapp.net`],
                 forwardingScore: 999,
