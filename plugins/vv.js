@@ -10,7 +10,7 @@ const quotedContact = {
   message: {
     contactMessage: {
       displayName: "B.M.B VERIFIED ✅",
-      vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=255767862457:+255 767 862457\nEND:VCARD"
+      vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=255767862457:+255767862457\nEND:VCARD"
     }
   }
 };
@@ -56,24 +56,21 @@ cmd({
 
     const buffer = await m.quoted.download?.();
     const mtype = m.quoted.mtype;
+
     if (!buffer || !mtype) {
       return await conn.sendMessage(from, {
         text: "❌ Unable to download the message or unsupported type.",
+        contextInfo: {
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 13
+          }
+        }
       }, { quoted: quotedContact });
     }
-
-    const options = {
-      contextInfo: {
-        forwardingScore: 999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: "120363382023564830@newsletter",
-          newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
-          serverMessageId: 13
-        }
-      },
-      quoted: quotedContact
-    };
 
     let content = {};
 
@@ -81,13 +78,13 @@ cmd({
       case "imageMessage":
         content = {
           image: buffer,
-          caption: m.quoted.text || "📷 Image restored",
+          caption: m.quoted.text || "📷 Image restored"
         };
         break;
       case "videoMessage":
         content = {
           video: buffer,
-          caption: m.quoted.text || "🎥 Video restored",
+          caption: m.quoted.text || "🎥 Video restored"
         };
         break;
       case "audioMessage":
@@ -99,11 +96,32 @@ cmd({
         break;
       default:
         return await conn.sendMessage(from, {
-          text: "❌ Only image, video, and audio view once messages are supported."
+          text: "❌ Only image, video, and audio view once messages are supported.",
+          contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterJid: "120363382023564830@newsletter",
+              newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+              serverMessageId: 13
+            }
+          }
         }, { quoted: quotedContact });
     }
 
-    await conn.sendMessage(from, content, options);
+    // Send restored content with newsletter context
+    await conn.sendMessage(from, {
+      ...content,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363382023564830@newsletter",
+          newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+          serverMessageId: 13
+        }
+      }
+    }, { quoted: quotedContact });
 
   } catch (error) {
     console.error("vv Error:", error);
@@ -111,4 +129,4 @@ cmd({
       text: `❌ Error occurred while retrieving view once:\n\n${error.message || error}`
     }, { quoted: quotedContact });
   }
-                           });
+});
