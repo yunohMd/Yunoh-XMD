@@ -41,8 +41,8 @@ async (conn, mek, m, { from }) => {
             }
         });
 
-        const caption = ` 👑 OWNER INFO
-      ━━━━━━━━━━━━━━━━━━━━━━
+        const caption = ` 🚀 OWNER INFO 🚀
+ ━━━━━━━━━━━━━━━━━━━━━━
  📛 Name   : ${ownerName}
  📞 Number : ${ownerNumber}
  ⚙️ Role   : Developer & Founder
