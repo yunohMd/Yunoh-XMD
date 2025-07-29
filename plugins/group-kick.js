@@ -1,5 +1,20 @@
 const { cmd } = require('../command');
 
+// Contact message for verified context
+const quotedContact = {
+    key: {
+        fromMe: false,
+        participant: `0@s.whatsapp.net`,
+        remoteJid: "status@broadcast"
+    },
+    message: {
+        contactMessage: {
+            displayName: "B.M.B VERIFIED ✅",
+            vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=254769529791:+254769529791\nEND:VCARD"
+        }
+    }
+};
+
 cmd({
     pattern: "remove",
     alias: ["kick", "k"],
@@ -11,34 +26,66 @@ cmd({
 async (conn, mek, m, {
     from, q, isGroup, isBotAdmins, reply, quoted, senderNumber
 }) => {
-    // Check if the command is used in a group
-    if (!isGroup) return reply("❌ This command can only be used in groups.");
+    const contextInfo = {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 1
+        }
+    };
 
-    // Get the bot owner's number dynamically from conn.user.id
+    if (!isGroup) return reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ This command can only be used in groups.
+╰──────────────────╯
+    `.trim(), { quoted: quotedContact, contextInfo });
+
     const botOwner = conn.user.id.split(":")[0];
     if (senderNumber !== botOwner) {
-        return reply("❌ Only the bot owner can use this command.");
+        return reply(`
+╭───「 *ACCESS DENIED* 」───╮
+│ 🚫 Only the bot owner can use this command.
+╰──────────────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
     }
 
-    // Check if the bot is an admin
-    if (!isBotAdmins) return reply("❌ I need to be an admin to use this command.");
+    if (!isBotAdmins) return reply(`
+╭───「 *BOT PERMISSION ERROR* 」───╮
+│ ❌ I need to be an admin to remove someone.
+╰────────────────────────────────╯
+    `.trim(), { quoted: quotedContact, contextInfo });
 
     let number;
     if (m.quoted) {
-        number = m.quoted.sender.split("@")[0]; // If replying to a message, get the sender's number
+        number = m.quoted.sender.split("@")[0];
     } else if (q && q.includes("@")) {
-        number = q.replace(/[@\s]/g, ''); // If mentioning a user
+        number = q.replace(/[@\s]/g, '');
     } else {
-        return reply("❌ Please reply to a message or mention a user to remove.");
+        return reply(`
+╭───「 *USAGE* 」───╮
+│ ❌ Please reply to a user or mention them.
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
     }
 
     const jid = number + "@s.whatsapp.net";
 
     try {
         await conn.groupParticipantsUpdate(from, [jid], "remove");
-        reply(`✅ Successfully removed @${number}`, { mentions: [jid] });
+        reply(`
+╭───「 *SUCCESS* 」───╮
+│ ✅ Successfully removed: @${number}
+╰──────────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo, mentions: [jid] });
     } catch (error) {
         console.error("Remove command error:", error);
-        reply("❌ Failed to remove the member.");
+        reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ Failed to remove the member.
+│ 💬 Reason: ${error.message}
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
     }
 });
