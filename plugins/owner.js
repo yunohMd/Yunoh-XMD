@@ -1,39 +1,31 @@
 const { cmd } = require('../command');
 const config = require('../config');
 
-// Contact message for verified context
-const quotedContact = {
-  key: {
-    fromMe: false,
-    participant: `0@s.whatsapp.net`,
-    remoteJid: "status@broadcast"
-  },
-  message: {
-    contactMessage: {
-      displayName: "B.M.B VERIFIED ✅",
-      vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=254769529791:+254769529791\nEND:VCARD"
-    }
-  }
-};
-
 cmd({
     pattern: "owner",
-    react: "✅", 
-    desc: "Get owner number",
+    react: "✅",
+    desc: "Displays bot owner's contact info",
     category: "main",
     filename: __filename
-}, 
-async (conn, mek, m, { from }) => {
+},
+async (conn, mek, m, { from, reply }) => {
     try {
         const ownerNumber = config.OWNER_NUMBER;
         const ownerName = config.OWNER_NAME;
 
-        const vcard = 'BEGIN:VCARD\n' +
-                      'VERSION:3.0\n' +
-                      `FN:${ownerName}\n` +  
-                      `TEL;type=CELL;type=VOICE;waid=${ownerNumber.replace('+', '')}:${ownerNumber}\n` + 
-                      'END:VCARD';
+        if (!ownerNumber || !ownerName) {
+            return reply("Owner details are missing in config file.");
+        }
 
+        const vcard = [
+            'BEGIN:VCARD',
+            'VERSION:3.0',
+            `FN:${ownerName}`,
+            `TEL;type=CELL;type=VOICE;waid=${ownerNumber.replace('+', '')}:${ownerNumber}`,
+            'END:VCARD'
+        ].join('\n');
+
+        // Send vCard contact
         await conn.sendMessage(from, {
             contacts: {
                 displayName: ownerName,
@@ -41,16 +33,17 @@ async (conn, mek, m, { from }) => {
             }
         });
 
-        const caption = ` 👑 OWNER INFO
- 📛 Name   : ${ownerName}
- 📞 Number : ${ownerNumber}
- ⚙️ Role   : Developer & Founder
- 📦 Version: 2.0.0 Beta
-  ⚡ Powered by 𝙽𝙾𝚅𝙰-𝚇𝙼𝙳⚡`;
-
+        // Send owner details with image
         await conn.sendMessage(from, {
             image: { url: 'https://github.com/novaxmd/BMB-DATA/raw/refs/heads/main/image/allmenu.jpg' },
-            caption,
+            caption:
+`┏━━━『 *Bot Owner Info* 』━━━┓
+┃ ✦ *Name:* ${ownerName}
+┃ ✦ *Number:* ${ownerNumber}
+┃ ✦ *Bot Version:* 2.0.0 Beta
+┃ ✦ *VPS:* 𝘕𝘖𝘝𝘈 𝘟𝘔𝘋
+┗━━━━━━━━━━━━━━━━━━━━━━┛
+_Contact owner only for important queries._`,
             contextInfo: {
                 mentionedJid: [`${ownerNumber.replace('+', '')}@s.whatsapp.net`],
                 forwardingScore: 999,
@@ -61,10 +54,14 @@ async (conn, mek, m, { from }) => {
                     serverMessageId: 143
                 }
             }
-        }, { quoted: quotedContact });
+        }, { quoted: mek });
 
     } catch (error) {
         console.error(error);
         reply(`An error occurred: ${error.message}`);
     }
 });
+
+
+
+              
