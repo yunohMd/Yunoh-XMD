@@ -1,6 +1,21 @@
-const config = require('../config')
-const { cmd, commands } = require('../command')
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('../lib/functions')
+const config = require('../config');
+const { cmd } = require('../command');
+const { isUrl } = require('../lib/functions');
+
+// Contact message for verified context
+const quotedContact = {
+    key: {
+        fromMe: false,
+        participant: `0@s.whatsapp.net`,
+        remoteJid: "status@broadcast"
+    },
+    message: {
+        contactMessage: {
+            displayName: "B.M.B VERIFIED ✅",
+            vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:B.M.B VERIFIED ✅\nORG:BMB-TECH BOT;\nTEL;type=CELL;type=VOICE;waid=254769529791:+254769529791\nEND:VCARD"
+        }
+    }
+};
 
 cmd({
     pattern: "join",
@@ -10,37 +25,63 @@ cmd({
     category: "group",
     use: '.join < Group Link >',
     filename: __filename
-}, async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isCreator, isDev, isAdmins, reply }) => {
+}, async (conn, mek, m, { from, quoted, q, isCreator, reply }) => {
+    const contextInfo = {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363382023564830@newsletter",
+            newsletterName: "𝙽𝙾𝚅𝙰-𝚇𝙼𝙳",
+            serverMessageId: 1
+        }
+    };
+
     try {
-        const msr = {
-            own_cmd: "You don't have permission to use this command."
-        };
+        if (!isCreator) return reply(`
+╭───「 *ACCESS DENIED* 」───╮
+│ ❌ You don't have permission to use this command.
+╰──────────────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
 
-        // Only allow the creator to use the command
-        if (!isCreator) return reply(msr.own_cmd);
-
-        // If there's no input, check if the message is a reply with a link
-        if (!q && !quoted) return reply("*Please write the Group Link*️ 🖇️");
+        if (!q && !quoted) return reply(`
+╭───「 *USAGE* 」───╮
+│ ❌ Please provide or reply with a valid group link.
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
 
         let groupLink;
 
-        // If the message is a reply to a group invite link
         if (quoted && quoted.type === 'conversation' && isUrl(quoted.text)) {
             groupLink = quoted.text.split('https://chat.whatsapp.com/')[1];
         } else if (q && isUrl(q)) {
-            // If the user provided the link in the command
             groupLink = q.split('https://chat.whatsapp.com/')[1];
         }
 
-        if (!groupLink) return reply("❌ *Invalid Group Link* 🖇️");
+        if (!groupLink) return reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ Invalid Group Link.
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
 
-        // Accept the group invite
         await conn.groupAcceptInvite(groupLink);
-        await conn.sendMessage(from, { text: `✔️ *Successfully Joined*` }, { quoted: mek });
+
+        return await conn.sendMessage(from, {
+            text: `
+╭───「 *SUCCESS* 」───╮
+│ ✔️ Successfully joined the group!
+╰────────────────────╯
+            `.trim(),
+            contextInfo
+        }, { quoted: quotedContact });
 
     } catch (e) {
         await conn.sendMessage(from, { react: { text: '❌', key: mek.key } });
-        console.log(e);
-        reply(`❌ *Error Occurred!!*\n\n${e}`);
+        console.error("Join Error:", e);
+        reply(`
+╭───「 *ERROR* 」───╮
+│ ❌ Failed to join the group.
+│ 💬 Reason: ${e.message}
+╰──────────────────╯
+        `.trim(), { quoted: quotedContact, contextInfo });
     }
 });
